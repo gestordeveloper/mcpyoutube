@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "target": "es2017",            
+      "module": "esnext",             
+      "moduleResolution": "node",
+      "esModuleInterop": true,
+      "outDir": "./dist",
+      "rootDir": "./source",
+      "strict": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true
+    },
+    "include": ["source/**/*"],
+    "exclude": ["node_modules"]
+  }
