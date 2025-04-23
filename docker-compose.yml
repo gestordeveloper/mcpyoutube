@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.email=contato@agenciaebenezer.com.br"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./letsencrypt:/letsencrypt"
+    networks:
+      - web
+
+  app:
+    build: .
+    container_name: node_app
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nodeapp.rule=Host(`mcpyoutube.crmbase.com.br`)"
+      - "traefik.http.routers.nodeapp.entrypoints=websecure"
+      - "traefik.http.routers.nodeapp.tls.certresolver=myresolver"
+      - "traefik.http.services.nodeapp.loadbalancer.server.port=3535"
+    networks:
+      - web
+    volumes:
+      - .:/usr/src/app
+    expose:
+      - "3535"
+    command: node dist/index.js
+
+networks:
+  web:
+    external: true
