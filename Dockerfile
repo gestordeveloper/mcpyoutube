@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Exponha a porta em que o servidor MCP será executado
-EXPOSE 3535
+EXPOSE 3838
 
 # Comando para iniciar o servidor
 CMD ["node", "dist/index.js"]
