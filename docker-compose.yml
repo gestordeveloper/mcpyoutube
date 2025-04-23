@@ -3,10 +3,11 @@ version: '3.8'
 services:
   traefik:
     image: traefik:v2.10
-    container_name: traefik
     command:
       - "--api.insecure=true"
+      - "--providers.docker.swarmmode=true"
       - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
@@ -18,27 +19,35 @@ services:
       - "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./letsencrypt:/letsencrypt"
+      - "letsencrypt:/letsencrypt"
     networks:
       - web
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
 
   app:
-    build: .
-    container_name: node_app
+    image: sammuel.fogaca@gmail.com/mcpyoutube_portainer:latest
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.nodeapp.rule=Host(`mcpyoutube.crmbase.com.br`)"
       - "traefik.http.routers.nodeapp.entrypoints=websecure"
       - "traefik.http.routers.nodeapp.tls.certresolver=myresolver"
-      - "traefik.http.services.nodeapp.loadbalancer.server.port=3535"
+      - "traefik.http.services.nodeapp.loadbalancer.server.port=3000"
     networks:
       - web
-    volumes:
-      - .:/usr/src/app
-    expose:
-      - "3535"
-    command: node dist/index.js
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == worker
 
 networks:
   web:
     external: true
+
+volumes:
+  letsencrypt:
