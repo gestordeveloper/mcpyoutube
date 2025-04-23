@@ -48,6 +48,7 @@ services:
 networks:
   web:
     external: true
+    name: easypanel
 
 volumes:
   letsencrypt:
