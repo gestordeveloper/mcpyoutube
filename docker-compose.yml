@@ -28,7 +28,7 @@ services:
           - node.role == manager
 
   app:
-    image: sammuel.fogaca@gmail.com/mcpyoutube_portainer:latest
+    image: agenciaebenezer/mcpyoutubeportainer:latest
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.nodeapp.rule=Host(`mcpyoutube.crmbase.com.br`)"
