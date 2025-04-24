@@ -28,7 +28,7 @@ services:
           - node.role == manager
 
   app:
-    image: agenciaebenezer/mcpyoutubeportainer:latest
+    image: agenciaebenezer/mcpyoutubeportainer:v1.0.1
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.nodeapp.rule=Host(`mcpyoutube.crmbase.com.br`)"
@@ -38,12 +38,12 @@ services:
     networks:
       - web
     deploy:
-      replicas: 2
+      replicas: 1
       restart_policy:
         condition: on-failure
       placement:
         constraints:
-          - node.role == worker
+          - node.role == manager
 
 networks:
   web:
