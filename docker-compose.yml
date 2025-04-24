@@ -1,40 +1,12 @@
 version: '3.8'
 
 services:
-  traefik:
-    image: traefik:v2.10
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker.swarmmode=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:3839"
-      - "--entrypoints.websecure.address=:3843"
-      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
-      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
-      - "--certificatesresolvers.myresolver.acme.email=contato@agenciaebenezer.com.br"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-    ports:
-      - "3839:80"
-      - "3843:443"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "letsencrypt:/letsencrypt"
-    networks:
-      - web
-    deploy:
-      placement:
-        constraints:
-          - node.role == manager
-
-  app:
+  mcpyoutube:
     image: agenciaebenezer/mcpyoutubeportainer:v1.0.1
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.nodeapp.rule=Host(`mcpyoutube.crmbase.com.br`)"
-      - "traefik.http.routers.nodeapp.entrypoints=websecure"
-      - "traefik.http.routers.nodeapp.tls.certresolver=myresolver"
-      - "traefik.http.services.nodeapp.loadbalancer.server.port=3839"
+    ports:
+      - 3839:3839
+    environment:
+      - PORT=3839
     networks:
       - web
     deploy:
@@ -49,6 +21,3 @@ networks:
   web:
     external: true
     name: easypanel
-
-volumes:
-  letsencrypt:
